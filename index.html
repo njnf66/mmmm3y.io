@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes" >
+	<meta name="apple-touch-fullscreen" content="yes" >
+	<title></title>
+	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="https://cdn.bootcss.com/jsbarcode/3.8.0/JsBarcode.all.min.js"></script>
+	<script src="js/jquery2.1.4.js"></script>
+	<script src="js/jquery.qrcode.js"></script>
+	<script src="js/utf.js"></script>
+
+	<style type="text/css">
+		html,
+		body {
+			width: 100%;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			justify-content: center;
+		}
+
+		.contentBox {
+			width: 100%;
+			height: 100%;
+			background: #f4f4f4;
+		}
+
+		.content {
+			width: 100%;
+			height: 100%;
+			box-sizing: border-box;
+			display: flex;
+			flex-direction: column;
+			margin-bottom: 5vw;
+			background: #f4f4f4;
+		}
+
+		/* 时间box */
+		.timeBox {
+			position: absolute;
+			top: 60vw;
+			left: 17.2vw;
+			display: flex;
+			align-items: baseline;
+			justify-content: center;
+			font-size: 5.6vw;
+			font-family: '-apple-system', 'HelveticaNeue';
+		}
+
+		#sRemain {
+			font-weight: 550;
+			/*字体粗细100~900，,400为normal*/
+			font-family: '-apple-system', 'HelveticaNeue';
+			overflow: hidden;
+			line-height: 5.4vw;
+		}
+
+		.qcodeBox {
+			position: absolute;
+			top: 71.85vw;
+			left: 23.3vw;
+			display: flex;
+			justify-content: center;
+		}
+
+		#dateTianBao {
+			position: absolute;
+			top: 168.9vw;
+			left: 23.2vw;
+			display: flex;
+			justify-content: center;
+			font-size: 2.7vw;
+			color: #979797;
+		}
+
+		.nav {
+			width: 100%;
+			z-index: 9998;
+			position: fixed;
+			margin: 0;
+			padding: 0;
+		}
+
+		#OStime {
+			position: absolute;
+			top: 4.45vw;
+			left: 14.95vw;
+			font-size: 3.5vw;
+		}
+
+		.top {
+			top: 0px;
+		}
+
+		.statusBar {
+			width: 100%;
+			display: flex;
+			justify-content: right;
+		}
+
+		.menu {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+		}
+
+
+		.bottom {
+			bottom: 0px;
+		}
+	</style>
+</head>
+
+<body onclick="fullscreen()">
+	<div class="contentBox">
+		<div class="content">
+			<div class="nav top">
+				<!-- <span id="OStime"></span> -->
+				<img class="statusBar" src="top1.png" style="opacity:0%;">
+				<img class="statusBar" src="top2.png" style="opacity:70%;">
+			</div>
+			<div>
+				<img class="beijing" src="20220824.png" style="width: 100%;">
+			</div>
+			<div class="box" style="height:auto">
+				<img id="barcode">
+				<div class="timeBox">
+					<span id="date"></span>
+					<span id="time"></span>
+					<span id="second"></span>
+					<span id="sRemain"></span>
+				</div>
+				<div class="qcodeBox" onclick="resetcodeContent()">
+					<div id="qrcode"></div>
+				</div>
+				<div id="dateTianBao"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="nav bottom">
+		<img class="menu" src="bottom.png" onclick="fullscreen()">
+	</div>
+</body>
+
+<script type="text/javascript">
+	//全屏
+	function fullscreen() {
+		var docElm = document.documentElement;
+		//W3C   
+		if (docElm.requestFullscreen) {
+			docElm.requestFullscreen();
+		}
+		//FireFox   
+		else if (docElm.mozRequestFullScreen) {
+			docElm.mozRequestFullScreen();
+		}
+		//Chrome等   
+		else if (docElm.webkitRequestFullScreen) {
+			docElm.webkitRequestFullScreen();
+		}
+		//IE11   
+		else if (elem.msRequestFullscreen) {
+			elem.msRequestFullscreen();
+		}
+		document.getElementById('fullscreen').style.display = "none";
+	}
+
+	//动态时间
+	// 年月日
+	let date = dateFormat(new Date())
+	var year = new Date().getFullYear();
+	date = year + '-' + date;
+	$('#date').html(date + '&nbsp')
+	// 时分
+	let time = dateFormat2(new Date())
+	$('#time').html(time)
+	$('#OStime').html(time)
+	//秒
+	let second = new Date().getSeconds()
+	if (second < 10) second = '0' + second
+	$('#second').html(':' + second + '&nbsp' + '&nbsp')
+	//倒计时
+	let sRemain = '59';
+	$('#sRemain').html('(' + sRemain + ')')
+	//填报的日期
+	// $('#dateTianBao').html(date + '健康填报')
+	$('#dateTianBao').html('2022-08-05健康填报')
+
+	setInterval(() => {
+		// 日期
+		date = dateFormat(new Date())
+		date = year + '-' + date
+		$('#date').html(date + '&nbsp')
+		// 时分
+		time = dateFormat2(new Date())
+		$('#time').html(time)
+		$('#OStime').html(time)
+		//秒
+		second = new Date().getSeconds()
+		if (second < 10) second = '0' + second
+		$('#second').html(':' + second + '&nbsp' + '&nbsp')
+		$('#time').html(time)
+		//倒计时
+		sRemain = sRemain - 1;
+		if (sRemain < 10) sRemain = '0' + sRemain
+		if (sRemain < 1) sRemain = '59'
+		$('#sRemain').text('(' + sRemain + ')')
+	}, 1000)
+
+	function dateFormat(data) {
+		Date.prototype.Format = function (fmt) {
+			var o = {
+				'M+': this.getMonth() + 1, //月份
+				'd+': this.getDate(), //日
+				'h+': this.getHours(), //小时
+				'm+': this.getMinutes(), //分
+				's+': this.getSeconds() //秒
+			};
+			if (/(y+)/.test(fmt)) {
+				//根据y的长度来截取年
+				fmt = fmt.replace(RegExp.$1,
+					(this.getFullYear() + '').substr(4 - RegExp.$1.length));
+			}
+			for (var k in o) {
+				if (new RegExp('(' + k + ')').test(fmt))
+					fmt = fmt.replace(
+						RegExp.$1,
+						RegExp.$1.length == 1 ?
+							o[k] :
+							('00' + o[k]).substr(('' + o[k]).length)
+					);
+			}
+			return fmt;
+		};
+		return data.Format('MM-dd');
+	}
+
+	function dateFormat2(data) {
+		Date.prototype.Format = function (fmt) {
+			var o = {
+				'M+': this.getMonth() + 1, //月份
+				'd+': this.getDate(), //日
+				'h+': this.getHours(), //小时
+				'm+': this.getMinutes(), //分
+				's+': this.getSeconds() //秒
+			};
+			if (/(y+)/.test(fmt)) {
+				//根据y的长度来截取年
+				fmt = fmt.replace(RegExp.$1,
+					(this.getFullYear() + '').substr(4 - RegExp.$1.length));
+			}
+			for (var k in o) {
+				if (new RegExp('(' + k + ')').test(fmt))
+					fmt = fmt.replace(
+						RegExp.$1,
+						RegExp.$1.length == 1 ?
+							o[k] :
+							('00' + o[k]).substr(('' + o[k]).length)
+					);
+			}
+			return fmt;
+		};
+		return data.Format('hh:mm');
+	}
+
+
+	// //时间
+	// var sRemain = '60';
+	// function setTime() {
+	// 	var date = new Date();
+	// 	var year = date.getFullYear();
+	// 	var month = date.getMonth();
+	// 	month = month + 1;
+	// 	month = month < 10 ? '0' + month : month;
+	// 	var datas = date.getDate();
+	// 	datas = datas < 10 ? '0' + datas : datas;
+	// 	var h = date.getHours();
+	// 	h = h < 10 ? '0' + h : h;
+	// 	var m = date.getMinutes();
+	// 	m = m < 10 ? '0' + m : m
+	// 	var s = date.getSeconds();
+	// 	s = s < 10 ? '0' + s : s;
+	// 	var t = document.querySelector('.timeBox');
+	// 	sRemain = sRemain - 1;
+	// 	t.innerHTML = year + '-' + month + '-' + datas + '&nbsp' + h + ':' + m + ':' + s +
+	// 		'&nbsp' + '<span>' + '(' + sRemain + ')' + '</span>';
+	// }
+	// setInterval(setTime, 1000);
+
+	//生成160位的随机数
+	var codeContent = randomNumber(160);
+	function randomNumber(len) {
+		let chars = '0123456789';
+		let maxPos = chars.length;
+		let str = '';
+		for (let i = 0; i < len; i++) {
+			str += chars.charAt(Math.floor(Math.random() * maxPos));
+		}
+		return str;
+	}
+	//生成二维码
+	var config = {
+		width: $(document.body).width() / 100.0 * 53.5,
+		height: $(document.body).width() / 100.0 * 53.5,
+		text: codeContent, //text就表示二维码中存储的数据  必须传递
+		correctLevel: 1,//取值为0|1|2|3 表示二维码的纠错级别0:L/1:M/2:Q/3:H ,默认0  可选参数
+		background: "#FFFFFF",	//默认白色, 表示二维码的后景颜色 可选参数
+		foreground: "#2CA064",	//默认黑色, 表示二维码的前景颜色 可选参数
+	};
+	$("#qrcode").qrcode(config);// jq找到id 为qrcode的 div，执行 二维码生成
+	console.log(config.text);
+	//重置二维码
+	function resetcodeContent() {
+		sRemain = '60'; //重置倒计时秒数
+		codeContent = randomNumber(160);
+		config = {	//重新设二维码的数据
+			width: $(document.body).width() / 100.0 * 53.5,	//二维码的宽、高
+			height: $(document.body).width() / 100.0 * 53.5,
+			text: codeContent,	//text就表示二维码中存储的数据  必须传递
+			correctLevel: 1,	//取值为0|1|2|3 表示二维码的纠错级别0:L/1:M/2:Q/3:H ,默认0  可选参数
+			background: "#FFFFFF",	//默认白色, 表示二维码的后景颜色 可选参数
+			foreground: "#2CA064",	//默认黑色, 表示二维码的前景颜色 可选参数
+		};
+		$("#qrcode").html("");  //清除id='qrcode'的原有的数据
+		$("#qrcode").qrcode(config);
+	}
+
+</script>
+
+</html>
